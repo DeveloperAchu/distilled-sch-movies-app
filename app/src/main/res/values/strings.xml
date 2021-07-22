@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Movies App</string>
     <string name="go_button">Go</string>
+    <string name="popular_tv_shows_title">Popular TV shows</string>
 </resources>
