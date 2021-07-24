@@ -16,7 +16,7 @@ import com.developerachu.moviesapp.models.TvShow
 class PopularTvShowsListAdapter(
     private val context: Context,
     private val popularTvShowsList: ArrayList<TvShow>,
-    var clickListener: OnTvShowClickListener? = null
+    private var clickListener: OnTvShowClickListener? = null
 ) : RecyclerView.Adapter<PopularTvShowsListAdapter.TvShowHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TvShowHolder {
         return TvShowHolder(
@@ -47,6 +47,7 @@ class PopularTvShowsListAdapter(
             v.findViewById(R.id.tv_show_popularity_text_view)
         private val tvShowVoteAverageTextView: TextView =
             v.findViewById(R.id.tv_show_vote_average_text_view)
+        private val tvShowDateTextView: TextView = v.findViewById(R.id.tv_show_date_text_view)
         private var clickListener: OnTvShowClickListener? = null
 
         init {
@@ -59,6 +60,7 @@ class PopularTvShowsListAdapter(
             tvShowNameTextView.text = tvShow.name
             tvShowPopularityTextView.text = tvShow.popularity
             tvShowVoteAverageTextView.text = tvShow.averageVote
+            tvShowDateTextView.text = tvShow.airDate
         }
 
         override fun onClick(v: View) {

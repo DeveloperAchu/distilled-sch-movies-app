@@ -4,8 +4,11 @@ package com.developerachu.moviesapp.utils
  * This object holds the common string constants and URLs that are being used in other files
  */
 object AppConstants {
+
     // Constants
     const val TAG_NAME = "Movies app log: "
+    const val POPULARITY = "Popularity: %s"
+    const val IMAGE_URL_PREFIX = "https://image.tmdb.org/t/p/w500%s"
 
     // Urls
     const val URL_GET_POPULAR_TV_SHOWS =
@@ -18,6 +21,7 @@ object AppConstants {
     const val JSON_TAG_POSTER_PATH = "poster_path"
     const val JSON_TAG_POPULARITY = "popularity"
     const val JSON_TAG_VOTE_AVERAGE = "vote_average"
+    const val JSON_TAG_FIRST_AIR_DATE = "first_air_date"
 
     // Error messages
     const val ERROR_TITLE = "Error"

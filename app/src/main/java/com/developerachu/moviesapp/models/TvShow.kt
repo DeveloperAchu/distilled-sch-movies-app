@@ -6,12 +6,14 @@ package com.developerachu.moviesapp.models
  * [name],
  * [imageUrl],
  * [popularity],
- * [averageVote]
+ * [averageVote],
+ * [airDate]
  */
 data class TvShow(
     val id: Int,
     val name: String,
     val imageUrl: String,
     val popularity: String,
-    val averageVote: String
+    val averageVote: String,
+    val airDate: String
 )

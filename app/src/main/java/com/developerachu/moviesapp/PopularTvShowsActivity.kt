@@ -1,5 +1,6 @@
 package com.developerachu.moviesapp
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.ProgressBar
@@ -18,6 +19,9 @@ import com.developerachu.moviesapp.webservices.GetApiResponse
 import com.developerachu.moviesapp.webservices.HttpRequestObject
 import kotlinx.coroutines.*
 import org.json.JSONObject
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.coroutines.CoroutineContext
 
 /**
@@ -194,9 +198,17 @@ class PopularTvShowsActivity : AppCompatActivity(), CoroutineScope, OnTvShowClic
                         TvShow(
                             currentTvShow[AppConstants.JSON_TAG_ID] as Int,
                             currentTvShow[AppConstants.JSON_TAG_NAME] as String,
-                            "https://image.tmdb.org/t/p/w500" + currentTvShow[AppConstants.JSON_TAG_POSTER_PATH] as String,
-                            "Popularity: " + currentTvShow[AppConstants.JSON_TAG_POPULARITY].toString(),
-                            currentTvShow[AppConstants.JSON_TAG_VOTE_AVERAGE].toString()
+                            String.format(
+                                AppConstants.IMAGE_URL_PREFIX,
+                                currentTvShow[AppConstants.JSON_TAG_POSTER_PATH] as String
+                            ),
+                            String.format(
+                                AppConstants.POPULARITY,
+                                currentTvShow[AppConstants.JSON_TAG_POPULARITY].toString()
+                            ),
+                            currentTvShow[AppConstants.JSON_TAG_VOTE_AVERAGE].toString(),
+                            formatDate(currentTvShow[AppConstants.JSON_TAG_FIRST_AIR_DATE] as String)
+
                         )
                     )
                 }
@@ -207,6 +219,13 @@ class PopularTvShowsActivity : AppCompatActivity(), CoroutineScope, OnTvShowClic
         } catch (e: Exception) {
             e.printStackTrace()
         }
+    }
+
+    private fun formatDate(date: String): String {
+        val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+        val convertedPattern = SimpleDateFormat("MMM dd\nyyyy", Locale.US)
+        val parsedDate = simpleDateFormat.parse(date)
+        return convertedPattern.format(parsedDate!!)
     }
 
     /**
@@ -220,6 +239,7 @@ class PopularTvShowsActivity : AppCompatActivity(), CoroutineScope, OnTvShowClic
     }
 
     override fun tvShowItemClicked(v: View, position: Int) {
-        println(AppConstants.TAG_NAME + position.toString())
+        val intent = Intent(this, TvShowDetailsActivity::class.java)
+        startActivity(intent)
     }
 }
