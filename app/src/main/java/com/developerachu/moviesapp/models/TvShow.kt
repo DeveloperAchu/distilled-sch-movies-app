@@ -12,6 +12,6 @@ data class TvShow(
     val id: Int,
     val name: String,
     val imageUrl: String,
-    val popularity: Any,
-    val averageVote: Any
+    val popularity: String,
+    val averageVote: String
 )

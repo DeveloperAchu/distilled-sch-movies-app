@@ -1,10 +1,16 @@
 package com.developerachu.moviesapp
 
 import android.os.Bundle
+import android.view.View
+import android.widget.ProgressBar
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.developerachu.moviesapp.adapters.PopularTvShowsListAdapter
 import com.developerachu.moviesapp.dialogs.AppDialogs
 import com.developerachu.moviesapp.interfaces.OnHttpRequestListener
+import com.developerachu.moviesapp.interfaces.OnTvShowClickListener
 import com.developerachu.moviesapp.models.TvShow
 import com.developerachu.moviesapp.utils.AppConstants
 import com.developerachu.moviesapp.utils.AppUtils
@@ -18,38 +24,76 @@ import kotlin.coroutines.CoroutineContext
  * Activity in which popular tv shows are loaded and displayed.
  * Extends both [AppCompatActivity] and [CoroutineScope]
  */
-class PopularTvShowsActivity : AppCompatActivity(), CoroutineScope {
-    // Initialize the context to the current activity
-    val context = this
-
+class PopularTvShowsActivity : AppCompatActivity(), CoroutineScope, OnTvShowClickListener {
     // Create a coroutine context
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Main + job
 
-    // Create a job variable to handle the background tasks
-    private lateinit var job: Job
-
-    // Recyclerview can be initialized lazily at the time of accessing it
-    private val popularTvShowsRecyclerView by lazy {
-        findViewById<RecyclerView>(R.id.popular_tv_shows_recycler_view)
-    }
+    // Initialize the context to the current activity
+    private val context = this
 
     // Create an array list to hold the popular tv shows
     private val popularTvShowsList = ArrayList<TvShow>()
 
+    // Create a job variable to handle the background tasks
+    private lateinit var job: Job
+
+    // Create a variable to hold the recyclerview widget
+    private lateinit var popularTvShowsRecyclerView: RecyclerView
+
+    // Create a variable to hold the progressbar widget
+    private lateinit var progressBar: ProgressBar
+
+    // Create a variable to hold the textview widget
+    private lateinit var noContentTextView: TextView
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_popular_tv_shows)
-
-        // On creating the activity, the job variable is initialized
-        job = Job()
-        clearAndReloadTvShows()
+        init()
     }
 
     override fun onDestroy() {
-        // The job gets cancelled once the activity is destroyed
+        // Cancel the job when the activity gets destroyed
         job.cancel()
         super.onDestroy()
+    }
+
+    private fun init() {
+        // On creating the activity, the job variable is initialized
+        job = Job()
+        initUiElementsAndVisibility()
+        clearAndReloadTvShows()
+    }
+
+    /**
+     * Function to initialize the UI elements and to initialize their visibility
+     */
+    private fun initUiElementsAndVisibility() {
+        popularTvShowsRecyclerView = findViewById(R.id.popular_tv_shows_recycler_view)
+        progressBar = findViewById(R.id.progress_bar)
+        noContentTextView = findViewById(R.id.no_content_text_view)
+        showProgressBar(true)
+    }
+
+    /**
+     * Function to control the visibility of progressbar and recyclerview
+     */
+    private fun showProgressBar(visibility: Boolean) {
+        if (visibility) {
+            popularTvShowsRecyclerView.visibility = View.GONE
+            noContentTextView.visibility = View.GONE
+            progressBar.visibility = View.VISIBLE
+        } else {
+            progressBar.visibility = View.GONE
+            popularTvShowsRecyclerView.visibility = View.VISIBLE
+        }
+    }
+
+    private fun showNoContentText() {
+        popularTvShowsRecyclerView.visibility = View.GONE
+        progressBar.visibility = View.GONE
+        noContentTextView.visibility = View.VISIBLE
     }
 
     /**
@@ -66,18 +110,12 @@ class PopularTvShowsActivity : AppCompatActivity(), CoroutineScope {
         httpRequestObject.setOnHttpRequestListener(object : OnHttpRequestListener {
             // Callback function to execute when the request resolves to success
             override fun onHttpRequestSuccess(responseCode: Int, data: String?) {
-                getPopularTvShowsList(data)
+                onSuccess(data)
             }
 
             // Callback function to execute when the request resolves to failure
             override fun onHttpRequestFailure(errorCode: Int, errorMsg: String?) {
-                // Show the error message as a popup
-                AppDialogs.singleActionDialog(
-                    context,
-                    AppConstants.ERROR_TITLE,
-                    errorMsg,
-                    fun() {}
-                )
+                onFailure(errorMsg)
             }
         })
 
@@ -87,18 +125,20 @@ class PopularTvShowsActivity : AppCompatActivity(), CoroutineScope {
                 Use withContext to call the functions serially one after the other.
              */
             launch {
-                try {
-                    val responseJson = withContext(Dispatchers.IO) {
-                        GetApiResponse.invokeRemoteApi(httpRequestObject)
+                withContext(Dispatchers.IO) {
+                    try {
+                        val responseJson = withContext(Dispatchers.IO) {
+                            GetApiResponse.invokeRemoteApi(httpRequestObject)
+                        }
+                        withContext(Dispatchers.IO) {
+                            GetApiResponse.parseResponseAndInvokeCallback(
+                                httpRequestObject,
+                                responseJson
+                            )
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
                     }
-                    withContext(Dispatchers.IO) {
-                        GetApiResponse.parseResponseAndInvokeCallback(
-                            httpRequestObject,
-                            responseJson
-                        )
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
                 }
             }
         } else {
@@ -108,6 +148,30 @@ class PopularTvShowsActivity : AppCompatActivity(), CoroutineScope {
                 AppConstants.ERROR_NO_INTERNET_CONNECTION,
                 fun() { finish() }
             )
+        }
+    }
+
+    private fun onSuccess(data: String?) {
+        MainScope().launch {
+            withContext(Dispatchers.Main) {
+                showProgressBar(false)
+                getPopularTvShowsList(data)
+            }
+        }
+    }
+
+    private fun onFailure(errorMsg: String?) {
+        MainScope().launch {
+            withContext(Dispatchers.Main) {
+                showProgressBar(false)
+                // Show the error message as a popup
+                AppDialogs.singleActionDialog(
+                    context,
+                    AppConstants.ERROR_TITLE,
+                    errorMsg,
+                    fun() {}
+                )
+            }
         }
     }
 
@@ -130,16 +194,15 @@ class PopularTvShowsActivity : AppCompatActivity(), CoroutineScope {
                         TvShow(
                             currentTvShow[AppConstants.JSON_TAG_ID] as Int,
                             currentTvShow[AppConstants.JSON_TAG_NAME] as String,
-                            currentTvShow[AppConstants.JSON_TAG_POSTER_PATH] as String,
-                            currentTvShow[AppConstants.JSON_TAG_POPULARITY],
-                            currentTvShow[AppConstants.JSON_TAG_VOTE_AVERAGE]
+                            "https://image.tmdb.org/t/p/w500" + currentTvShow[AppConstants.JSON_TAG_POSTER_PATH] as String,
+                            "Popularity: " + currentTvShow[AppConstants.JSON_TAG_POPULARITY].toString(),
+                            currentTvShow[AppConstants.JSON_TAG_VOTE_AVERAGE].toString()
                         )
                     )
                 }
                 setMyStoriesListAdapter()
             } else {
-//                myStoriesRecyclerView.setVisibility(View.GONE)
-//                noItemsLabelTextView.setVisibility(View.VISIBLE)
+                showNoContentText()
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -150,6 +213,13 @@ class PopularTvShowsActivity : AppCompatActivity(), CoroutineScope {
      * TODO: function comment
      */
     private fun setMyStoriesListAdapter() {
-        println(AppConstants.TAG_NAME + popularTvShowsList.size.toString())
+        val popularTvShowsListAdapter = PopularTvShowsListAdapter(context, popularTvShowsList)
+        popularTvShowsRecyclerView.layoutManager = LinearLayoutManager(context)
+        popularTvShowsListAdapter.setTvShowClickListener(this)
+        popularTvShowsRecyclerView.adapter = popularTvShowsListAdapter
+    }
+
+    override fun tvShowItemClicked(v: View, position: Int) {
+        println(AppConstants.TAG_NAME + position.toString())
     }
 }
