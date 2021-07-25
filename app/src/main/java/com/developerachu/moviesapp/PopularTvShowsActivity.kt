@@ -107,7 +107,7 @@ class PopularTvShowsActivity : AppCompatActivity(), CoroutineScope, OnTvShowClic
     }
 
     /**
-     * Function to control the visibility of textview. This textview show a message when no data
+     * Function to control the visibility of textview. This textview shows a message when no data
      * is fetched from the API
      */
     private fun showNoContentText() {
@@ -119,7 +119,7 @@ class PopularTvShowsActivity : AppCompatActivity(), CoroutineScope, OnTvShowClic
 
     /**
      * Function clears the array list holding the popular tv shows data
-     * and initializes an HttpRequestObject. Function launches the function on the IO
+     * and initializes an HttpRequestObject. Function launches the IO
      * thread to fetch the popular tv shows list using the API
      */
     private fun clearAndReloadTvShows() {
@@ -175,7 +175,8 @@ class PopularTvShowsActivity : AppCompatActivity(), CoroutineScope, OnTvShowClic
 
     /**
      * Function to execute once the API call resolves to success. This function is dispatched on
-     * to the main thread. Function takes in the [data] to be parsed to get the API response
+     * to the main thread. Function takes in the [data] as a string to be parsed to get the
+     * API response
      */
     private fun onSuccess(data: String?) {
         MainScope().launch {
@@ -206,7 +207,7 @@ class PopularTvShowsActivity : AppCompatActivity(), CoroutineScope, OnTvShowClic
     }
 
     /**
-     * Function to parse the tv shows using the [data] received from the API response
+     * Function to parse the tv shows using the [data] string received from the API response
      */
     private fun getPopularTvShowsList(data: String?) {
         try {
@@ -236,6 +237,7 @@ class PopularTvShowsActivity : AppCompatActivity(), CoroutineScope, OnTvShowClic
                             ),
                             currentTvShow[AppConstants.JSON_TAG_POPULARITY] as Double,
                             currentTvShow[AppConstants.JSON_TAG_VOTE_AVERAGE] as Number,
+                            // Date is formatted here as a string
                             AppUtils.formatDate(currentTvShow[AppConstants.JSON_TAG_FIRST_AIR_DATE] as String),
                             AppUtils.formatDateToLong(currentTvShow[AppConstants.JSON_TAG_FIRST_AIR_DATE] as String)
                         )
@@ -283,12 +285,18 @@ class PopularTvShowsActivity : AppCompatActivity(), CoroutineScope, OnTvShowClic
         startActivity(intent)
     }
 
+    /**
+     * Overridden function to handle the menu inflation
+     */
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val inflater: MenuInflater = menuInflater
         inflater.inflate(R.menu.sort_menu, menu)
         return true
     }
 
+    /**
+     * Overridden function to handle the menu item click event
+     */
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         // Handle item selection
         return when (item.itemId) {
@@ -317,17 +325,21 @@ class PopularTvShowsActivity : AppCompatActivity(), CoroutineScope, OnTvShowClic
                 true
             }
             R.id.air_date_low_high -> {
-                sortAirDate(true)
+                sortFirstAirDate(true)
                 true
             }
             R.id.air_date_high_low -> {
-                sortAirDate(false)
+                sortFirstAirDate(false)
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
     }
 
+    /**
+     * Function to sort the popular tv shows alphabetically using [sortAsc].
+     * If [sortAsc] is true, tv shows are sorted from a-z. Else from z-a
+     */
     private fun sortAlphabetically(sortAsc: Boolean) {
         val sortedTvShowsList = if (sortAsc) {
             popularTvShowsList.sortedWith(compareBy { it.name })
@@ -338,6 +350,11 @@ class PopularTvShowsActivity : AppCompatActivity(), CoroutineScope, OnTvShowClic
         updateAdapterData(sortedTvShowsList)
     }
 
+    /**
+     * Function to sort the popular tv shows based on its popularity using [sortAsc].
+     * If [sortAsc] is true, tv shows are sorted in ascending order. Else in descending order.
+     * Here, the popularityValue of the TvShow object is used for sorting
+     */
     private fun sortPopularity(sortAsc: Boolean) {
         val sortedTvShowsList = if (sortAsc) {
             popularTvShowsList.sortedWith(compareBy { it.popularityValue })
@@ -348,6 +365,12 @@ class PopularTvShowsActivity : AppCompatActivity(), CoroutineScope, OnTvShowClic
         updateAdapterData(sortedTvShowsList)
     }
 
+    /**
+     * Function to sort the popular tv shows based on its average vote using [sortAsc].
+     * If [sortAsc] is true, tv shows are sorted in ascending order. Else in descending order.
+     * Here, the averageVote of the TvShow object is converted to double value before being
+     * used for sorting
+     */
     private fun sortVote(sortAsc: Boolean) {
         val sortedTvShowsList = if (sortAsc) {
             popularTvShowsList.sortedWith(compareBy { it.averageVote.toDouble() })
@@ -358,7 +381,13 @@ class PopularTvShowsActivity : AppCompatActivity(), CoroutineScope, OnTvShowClic
         updateAdapterData(sortedTvShowsList)
     }
 
-    private fun sortAirDate(sortAsc: Boolean) {
+    /**
+     * Function to sort the popular tv shows based on its first air date using [sortAsc].
+     * If [sortAsc] is true, tv shows are sorted in chronological order. Else in
+     * reverse-chronological order.
+     * Here, the firstAirDateLongValue of the TvShow object is used for sorting
+     */
+    private fun sortFirstAirDate(sortAsc: Boolean) {
         val sortedTvShowsList = if (sortAsc) {
             popularTvShowsList.sortedWith(compareBy { it.firstAirDateLongValue })
         } else {
@@ -368,6 +397,9 @@ class PopularTvShowsActivity : AppCompatActivity(), CoroutineScope, OnTvShowClic
         updateAdapterData(sortedTvShowsList)
     }
 
+    /**
+     * Function to update the recyclerview items and notify the adapter of the data change
+     */
     private fun updateAdapterData(sortedTvShowsList: MutableList<TvShow>) {
         popularTvShowsList.clear()
         popularTvShowsList.addAll(sortedTvShowsList)

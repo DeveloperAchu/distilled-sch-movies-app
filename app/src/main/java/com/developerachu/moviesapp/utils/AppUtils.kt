@@ -69,6 +69,6 @@ object AppUtils {
      */
     fun formatDateToLong(date: String): Long {
         val parsedDate = SimpleDateFormat("yyyy-MM-dd", Locale.US).parse(date)
-        return parsedDate.time
+        return parsedDate!!.time
     }
 }
