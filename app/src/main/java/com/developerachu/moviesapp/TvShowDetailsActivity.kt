@@ -1,19 +1,27 @@
 package com.developerachu.moviesapp
 
+import android.annotation.SuppressLint
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.NestedScrollView
+import com.bumptech.glide.Glide
 import com.developerachu.moviesapp.dialogs.AppDialogs
 import com.developerachu.moviesapp.interfaces.OnHttpRequestListener
 import com.developerachu.moviesapp.utils.AppConstants
 import com.developerachu.moviesapp.utils.AppUtils
 import com.developerachu.moviesapp.webservices.GetApiResponse
 import com.developerachu.moviesapp.webservices.HttpRequestObject
+import com.google.android.flexbox.FlexboxLayout
 import kotlinx.coroutines.*
 import org.json.JSONArray
 import org.json.JSONObject
 import kotlin.coroutines.CoroutineContext
+
 
 class TvShowDetailsActivity : AppCompatActivity(), CoroutineScope {
     // Create a job variable to handle the background tasks
@@ -31,6 +39,24 @@ class TvShowDetailsActivity : AppCompatActivity(), CoroutineScope {
 
     // Create a variable to hold the textview widget
     private lateinit var noDetailsTextView: TextView
+
+    // Create a variable to hold the nested scrollview widget
+    private lateinit var detailsScrollView: NestedScrollView
+
+    // Create variables to hold all the widgets that need to be populated later
+    private lateinit var posterImageView: ImageView
+    private lateinit var nameTextView: TextView
+    private lateinit var genreLayout: FlexboxLayout
+    private lateinit var overviewTextView: TextView
+    private lateinit var popularityTextView: TextView
+    private lateinit var firstAirDateTextView: TextView
+    private lateinit var seasonsTextView: TextView
+    private lateinit var episodesTextView: TextView
+    private lateinit var statusTextView: TextView
+    private lateinit var typeTextView: TextView
+    private lateinit var voteAverageTextView: TextView
+    private lateinit var voteCountTextView: TextView
+
 
     // Create a variable to hold the id of the tv show
     private var id: Int? = 0
@@ -66,10 +92,23 @@ class TvShowDetailsActivity : AppCompatActivity(), CoroutineScope {
     private fun initUiElements() {
         progressBar = findViewById(R.id.progress_bar)
         noDetailsTextView = findViewById(R.id.no_details_text_view)
+        detailsScrollView = findViewById(R.id.details_scroll_view)
         AppUtils.visibilityController(
             arrayOf(progressBar),
-            arrayOf(noDetailsTextView)
+            arrayOf(noDetailsTextView, detailsScrollView)
         )
+        posterImageView = findViewById(R.id.poster_image_view)
+        nameTextView = findViewById(R.id.name_text_view)
+        genreLayout = findViewById(R.id.genre_layout)
+        overviewTextView = findViewById(R.id.overview_text_view)
+        popularityTextView = findViewById(R.id.popularity_text_view)
+        firstAirDateTextView = findViewById(R.id.first_air_date_text_view)
+        seasonsTextView = findViewById(R.id.seasons_text_view)
+        episodesTextView = findViewById(R.id.episodes_text_view)
+        statusTextView = findViewById(R.id.status_text_view)
+        typeTextView = findViewById(R.id.type_text_view)
+        voteAverageTextView = findViewById(R.id.vote_average_text_view)
+        voteCountTextView = findViewById(R.id.vote_count_text_view)
     }
 
     /**
@@ -133,8 +172,8 @@ class TvShowDetailsActivity : AppCompatActivity(), CoroutineScope {
         MainScope().launch {
             withContext(Dispatchers.Main) {
                 AppUtils.visibilityController(
-                    arrayOf(),
-                    arrayOf(progressBar)
+                    arrayOf(detailsScrollView),
+                    arrayOf(progressBar, noDetailsTextView)
                 )
                 getTvShowDetailsList(data)
             }
@@ -149,8 +188,8 @@ class TvShowDetailsActivity : AppCompatActivity(), CoroutineScope {
         MainScope().launch {
             withContext(Dispatchers.Main) {
                 AppUtils.visibilityController(
-                    arrayOf(),
-                    arrayOf(progressBar)
+                    arrayOf(noDetailsTextView),
+                    arrayOf(progressBar, detailsScrollView)
                 )
                 // Show the error message as a popup
                 AppDialogs.singleActionDialog(
@@ -220,8 +259,9 @@ class TvShowDetailsActivity : AppCompatActivity(), CoroutineScope {
     }
 
     /**
-     * TODO: function comment
+     * Function to populate the UI elements with the data
      */
+    @SuppressLint("InflateParams")
     private fun populateUI(
         name: String,
         imageUrl: String,
@@ -236,6 +276,25 @@ class TvShowDetailsActivity : AppCompatActivity(), CoroutineScope {
         voteAverage: String,
         voteCount: String
     ) {
+        Glide.with(context).load(imageUrl).into(posterImageView)
+        nameTextView.text = name
+        overviewTextView.text = overview
+        popularityTextView.text = popularity
+        firstAirDateTextView.text = firstAirDate.replace("\n", ", ")
+        seasonsTextView.text = numberOfSeasons
+        episodesTextView.text = numberOfEpisodes
+        statusTextView.text = status
+        typeTextView.text = type
+        voteAverageTextView.text = voteAverage
+        voteCountTextView.text = voteCount
 
+        // For each genre item we have, we inflate a new view with a textview and add that to
+        // the layout
+        for (genre in genres) {
+            val view: View = LayoutInflater.from(context).inflate(R.layout.genre_item, null, false)
+            val textView = view.findViewById<TextView>(R.id.genre_text_view)
+            textView.text = genre
+            genreLayout.addView(view)
+        }
     }
 }

@@ -72,7 +72,7 @@
         android:layout_marginBottom="8dp"
         android:ellipsize="end"
         android:maxLines="1"
-        android:textColor="@color/popularityTextColor"
+        android:textColor="@color/subTextColor"
         android:textSize="14sp"
         android:textStyle="italic"
         app:layout_constraintBottom_toBottomOf="@+id/tv_show_image_view_card"
