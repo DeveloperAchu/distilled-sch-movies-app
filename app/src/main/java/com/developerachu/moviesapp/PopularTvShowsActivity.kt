@@ -26,7 +26,7 @@ import kotlin.coroutines.CoroutineContext
 
 /**
  * Activity in which popular tv shows are loaded and displayed.
- * Extends both [AppCompatActivity] and [CoroutineScope]
+ * Extends [AppCompatActivity], [CoroutineScope] and [OnTvShowClickListener]
  */
 class PopularTvShowsActivity : AppCompatActivity(), CoroutineScope, OnTvShowClickListener {
     // Create a coroutine context
@@ -63,17 +63,21 @@ class PopularTvShowsActivity : AppCompatActivity(), CoroutineScope, OnTvShowClic
         super.onDestroy()
     }
 
+    /**
+     * Function to initialize the UI elements and start the flow of execution once the activity
+     * lifecycle is started
+     */
     private fun init() {
-        // On creating the activity, the job variable is initialized
+        // The job variable is initialized here
         job = Job()
-        initUiElementsAndVisibility()
+        initUiElements()
         clearAndReloadTvShows()
     }
 
     /**
-     * Function to initialize the UI elements and to initialize their visibility
+     * Function initializes the UI elements
      */
-    private fun initUiElementsAndVisibility() {
+    private fun initUiElements() {
         popularTvShowsRecyclerView = findViewById(R.id.popular_tv_shows_recycler_view)
         progressBar = findViewById(R.id.progress_bar)
         noContentTextView = findViewById(R.id.no_content_text_view)
@@ -81,7 +85,9 @@ class PopularTvShowsActivity : AppCompatActivity(), CoroutineScope, OnTvShowClic
     }
 
     /**
-     * Function to control the visibility of progressbar and recyclerview
+     * Function controls the visibility of progressbar using [visibility]
+     * If [visibility] is true, progressbar is made visible and the recyclerview and textview
+     * are hidden. Else, progressbar is hidden and the recyclerview only is made visible
      */
     private fun showProgressBar(visibility: Boolean) {
         if (visibility) {
@@ -94,6 +100,10 @@ class PopularTvShowsActivity : AppCompatActivity(), CoroutineScope, OnTvShowClic
         }
     }
 
+    /**
+     * Function to control the visibility of textview. This textview show a message when no data
+     * is fetched from the API
+     */
     private fun showNoContentText() {
         popularTvShowsRecyclerView.visibility = View.GONE
         progressBar.visibility = View.GONE
@@ -112,12 +122,14 @@ class PopularTvShowsActivity : AppCompatActivity(), CoroutineScope, OnTvShowClic
         httpRequestObject.context = context
         httpRequestObject.url = AppConstants.URL_GET_POPULAR_TV_SHOWS
         httpRequestObject.setOnHttpRequestListener(object : OnHttpRequestListener {
-            // Callback function to execute when the request resolves to success
+            // Reimplement the abstract implementation to execute when
+            // the request resolves to success
             override fun onHttpRequestSuccess(responseCode: Int, data: String?) {
                 onSuccess(data)
             }
 
-            // Callback function to execute when the request resolves to failure
+            // Reimplement the abstract implementation to execute when
+            // the request resolves to failure
             override fun onHttpRequestFailure(errorCode: Int, errorMsg: String?) {
                 onFailure(errorMsg)
             }
@@ -129,20 +141,18 @@ class PopularTvShowsActivity : AppCompatActivity(), CoroutineScope, OnTvShowClic
                 Use withContext to call the functions serially one after the other.
              */
             launch {
-                withContext(Dispatchers.IO) {
-                    try {
-                        val responseJson = withContext(Dispatchers.IO) {
-                            GetApiResponse.invokeRemoteApi(httpRequestObject)
-                        }
-                        withContext(Dispatchers.IO) {
-                            GetApiResponse.parseResponseAndInvokeCallback(
-                                httpRequestObject,
-                                responseJson
-                            )
-                        }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
+                try {
+                    val responseJson = withContext(Dispatchers.IO) {
+                        GetApiResponse.invokeRemoteApi(httpRequestObject)
                     }
+                    withContext(Dispatchers.IO) {
+                        GetApiResponse.parseResponseAndInvokeCallback(
+                            httpRequestObject,
+                            responseJson
+                        )
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
             }
         } else {
@@ -155,6 +165,10 @@ class PopularTvShowsActivity : AppCompatActivity(), CoroutineScope, OnTvShowClic
         }
     }
 
+    /**
+     * Function to execute once the API call resolves to success. This function is dispatched on
+     * to the main thread. Function takes in the [data] to be parsed to get the API response
+     */
     private fun onSuccess(data: String?) {
         MainScope().launch {
             withContext(Dispatchers.Main) {
@@ -164,6 +178,10 @@ class PopularTvShowsActivity : AppCompatActivity(), CoroutineScope, OnTvShowClic
         }
     }
 
+    /**
+     * Function to execute once the API call resolves to failure. This function is dispatched on
+     * to the main thread. Function takes in the [errorMsg] to be displayed in the alert popup
+     */
     private fun onFailure(errorMsg: String?) {
         MainScope().launch {
             withContext(Dispatchers.Main) {
@@ -198,10 +216,12 @@ class PopularTvShowsActivity : AppCompatActivity(), CoroutineScope, OnTvShowClic
                         TvShow(
                             currentTvShow[AppConstants.JSON_TAG_ID] as Int,
                             currentTvShow[AppConstants.JSON_TAG_NAME] as String,
+                            // Image prefix URL is added here
                             String.format(
                                 AppConstants.IMAGE_URL_PREFIX,
                                 currentTvShow[AppConstants.JSON_TAG_POSTER_PATH] as String
                             ),
+                            // Popularity string is formatted here
                             String.format(
                                 AppConstants.POPULARITY,
                                 currentTvShow[AppConstants.JSON_TAG_POPULARITY].toString()
@@ -221,15 +241,26 @@ class PopularTvShowsActivity : AppCompatActivity(), CoroutineScope, OnTvShowClic
         }
     }
 
+    /**
+     * Function converts the date string received from the API response to MMM dd\nyyyy format
+     * to be used in the app. Function takes in [date] in yyyy-MM-dd format
+     */
     private fun formatDate(date: String): String {
-        val simpleDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
-        val convertedPattern = SimpleDateFormat("MMM dd\nyyyy", Locale.US)
-        val parsedDate = simpleDateFormat.parse(date)
-        return convertedPattern.format(parsedDate!!)
+        val parsedDate = SimpleDateFormat("yyyy-MM-dd", Locale.US).parse(date)
+        return SimpleDateFormat("MMM dd\nyyyy", Locale.US).format(parsedDate!!)
     }
 
     /**
-     * TODO: function comment
+     * Function to setup the adapter for the recyclerview.
+     *
+     * Creates a new instance of the custom recyclerview adapter implementation using the
+     * context and popularTvShowsList.
+     *
+     * Creates a new liner layout manager instance for the recyclerview
+     *
+     * Initializes a custom click listener in the current activity context
+     *
+     * Finally, set the adapter of the recyclerview to the newly created custom adapter instance
      */
     private fun setMyStoriesListAdapter() {
         val popularTvShowsListAdapter = PopularTvShowsListAdapter(context, popularTvShowsList)
@@ -238,8 +269,17 @@ class PopularTvShowsActivity : AppCompatActivity(), CoroutineScope, OnTvShowClic
         popularTvShowsRecyclerView.adapter = popularTvShowsListAdapter
     }
 
-    override fun tvShowItemClicked(v: View, position: Int) {
+    /**
+     * Reimplement the abstract implementation to handle the click events on the
+     * tv show item in the recyclerview list. Receives [view] and [position] of the view in
+     * the recyclerview.
+     * Function finds the id of the clicked tv show and pass that id to the details activity
+     * that is being started from here.
+     */
+    override fun tvShowItemClicked(view: View, position: Int) {
+        val id = popularTvShowsList[position].id
         val intent = Intent(this, TvShowDetailsActivity::class.java)
+        intent.putExtra(AppConstants.POPULAR_SHOW_ID, id)
         startActivity(intent)
     }
 }

@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package com.developerachu.moviesapp.utils
 
 import android.content.Context

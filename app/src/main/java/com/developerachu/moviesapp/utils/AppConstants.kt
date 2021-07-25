@@ -5,8 +5,9 @@ package com.developerachu.moviesapp.utils
  */
 object AppConstants {
 
+
     // Constants
-    const val TAG_NAME = "Movies app log: "
+    const val POPULAR_SHOW_ID = "id"
     const val POPULARITY = "Popularity: %s"
     const val IMAGE_URL_PREFIX = "https://image.tmdb.org/t/p/w500%s"
 
@@ -23,6 +24,10 @@ object AppConstants {
     const val JSON_TAG_VOTE_AVERAGE = "vote_average"
     const val JSON_TAG_FIRST_AIR_DATE = "first_air_date"
 
+    // Response codes
+    const val RESPONSE_CODE_SUCCESS = 200
+    const val RESPONSE_CODE_NO_CONTENT = 204
+
     // Error messages
     const val ERROR_TITLE = "Error"
     const val ERROR_CONNECTION_PROBLEM = "Connection Problem"
@@ -30,8 +35,4 @@ object AppConstants {
         "This application requires internet connection to work properly."
     const val ERROR_NO_RESPONSE = "No response from server"
     const val ERROR_SOMETHING_WENT_WRONG = "Something went wrong"
-
-    // Response codes
-    const val RESPONSE_CODE_SUCCESS = 200
-    const val RESPONSE_CODE_NO_CONTENT = 204
 }
