@@ -1,5 +1,7 @@
 package com.developerachu.moviesapp.utils
 
+import com.developerachu.moviesapp.BuildConfig
+
 /**
  * This object holds the common string constants and URLs that are being used in other files
  */
@@ -14,9 +16,9 @@ object AppConstants {
 
     // Urls
     const val URL_GET_POPULAR_TV_SHOWS =
-        "https://api.themoviedb.org/3/tv/top_rated?api_key=25a8f80ba018b52efb64f05140f6b43c&language=en-US&page=1"
+        "https://api.themoviedb.org/3/tv/top_rated?api_key=" + BuildConfig.API_KEY + "&language=en-US&page=1"
     const val URL_GET_TV_SHOW_DETAILS =
-        "https://api.themoviedb.org/3/tv/%s?api_key=25a8f80ba018b52efb64f05140f6b43c&language=en-US"
+        "https://api.themoviedb.org/3/tv/%s?api_key=" + BuildConfig.API_KEY + "&language=en-US"
 
     // Json tags
     const val JSON_TAG_RESULTS = "results"
