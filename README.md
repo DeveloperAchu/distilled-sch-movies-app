@@ -1,7 +1,7 @@
 # Movies App - Distilled SCH
 
 This is a sample project to fetch the popular tv shows from the [MoviesDB](https://www.themoviedb.org/) 
-APIs and show them in the app.
+APIs and show them in the app. You can get the apk of the app [here](https://drive.google.com/file/d/1EBb-XADDiKiyaTobAXQC0g37OlHNt1rZ/view?usp=sharing)
 
 ## Screen 1
 
