@@ -6,6 +6,9 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
+import android.view.View
+import java.text.SimpleDateFormat
+import java.util.*
 
 object AppUtils {
     /**
@@ -39,5 +42,24 @@ object AppUtils {
             if (activeNetworkInfo != null && activeNetworkInfo.isConnected) return true
         }
         return false
+    }
+
+    fun visibilityController(visibleWidgets: Array<View>, hiddenWidgets: Array<View>) {
+        for (element in visibleWidgets) {
+            element.visibility = View.VISIBLE
+        }
+
+        for (element in hiddenWidgets) {
+            element.visibility = View.GONE
+        }
+    }
+
+    /**
+     * Function converts the date string received from the API response to MMM dd\nyyyy format
+     * to be used in the app. Function takes in [date] in yyyy-MM-dd format
+     */
+    fun formatDate(date: String): String {
+        val parsedDate = SimpleDateFormat("yyyy-MM-dd", Locale.US).parse(date)
+        return SimpleDateFormat("MMM dd\nyyyy", Locale.US).format(parsedDate!!)
     }
 }

@@ -14,6 +14,8 @@ object AppConstants {
     // Urls
     const val URL_GET_POPULAR_TV_SHOWS =
         "https://api.themoviedb.org/3/tv/top_rated?api_key=25a8f80ba018b52efb64f05140f6b43c&language=en-US&page=1"
+    const val URL_GET_TV_SHOW_DETAILS =
+        "https://api.themoviedb.org/3/tv/%s?api_key=25a8f80ba018b52efb64f05140f6b43c&language=en-US"
 
     // Json tags
     const val JSON_TAG_RESULTS = "results"
@@ -23,6 +25,13 @@ object AppConstants {
     const val JSON_TAG_POPULARITY = "popularity"
     const val JSON_TAG_VOTE_AVERAGE = "vote_average"
     const val JSON_TAG_FIRST_AIR_DATE = "first_air_date"
+    const val JSON_TAG_GENRES = "genres"
+    const val JSON_TAG_OVERVIEW = "overview"
+    const val JSON_TAG_NUMBER_OF_EPISODES = "number_of_episodes"
+    const val JSON_TAG_NUMBER_OF_SEASONS = "number_of_seasons"
+    const val JSON_TAG_STATUS = "status"
+    const val JSON_TAG_TYPE = "type"
+    const val JSON_TAG_VOTE_COUNT = "vote_count"
 
     // Response codes
     const val RESPONSE_CODE_SUCCESS = 200

@@ -29,6 +29,9 @@ import kotlin.coroutines.CoroutineContext
  * Extends [AppCompatActivity], [CoroutineScope] and [OnTvShowClickListener]
  */
 class PopularTvShowsActivity : AppCompatActivity(), CoroutineScope, OnTvShowClickListener {
+    // Create a job variable to handle the background tasks
+    private lateinit var job: Job
+
     // Create a coroutine context
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.Main + job
@@ -38,9 +41,6 @@ class PopularTvShowsActivity : AppCompatActivity(), CoroutineScope, OnTvShowClic
 
     // Create an array list to hold the popular tv shows
     private val popularTvShowsList = ArrayList<TvShow>()
-
-    // Create a job variable to handle the background tasks
-    private lateinit var job: Job
 
     // Create a variable to hold the recyclerview widget
     private lateinit var popularTvShowsRecyclerView: RecyclerView
@@ -75,7 +75,7 @@ class PopularTvShowsActivity : AppCompatActivity(), CoroutineScope, OnTvShowClic
     }
 
     /**
-     * Function initializes the UI elements
+     * Function ot initialize the UI elements
      */
     private fun initUiElements() {
         popularTvShowsRecyclerView = findViewById(R.id.popular_tv_shows_recycler_view)
@@ -91,12 +91,15 @@ class PopularTvShowsActivity : AppCompatActivity(), CoroutineScope, OnTvShowClic
      */
     private fun showProgressBar(visibility: Boolean) {
         if (visibility) {
-            popularTvShowsRecyclerView.visibility = View.GONE
-            noContentTextView.visibility = View.GONE
-            progressBar.visibility = View.VISIBLE
+            AppUtils.visibilityController(
+                arrayOf(progressBar),
+                arrayOf(popularTvShowsRecyclerView, noContentTextView)
+            )
         } else {
-            progressBar.visibility = View.GONE
-            popularTvShowsRecyclerView.visibility = View.VISIBLE
+            AppUtils.visibilityController(
+                arrayOf(popularTvShowsRecyclerView),
+                arrayOf(progressBar)
+            )
         }
     }
 
@@ -105,14 +108,16 @@ class PopularTvShowsActivity : AppCompatActivity(), CoroutineScope, OnTvShowClic
      * is fetched from the API
      */
     private fun showNoContentText() {
-        popularTvShowsRecyclerView.visibility = View.GONE
-        progressBar.visibility = View.GONE
-        noContentTextView.visibility = View.VISIBLE
+        AppUtils.visibilityController(
+            arrayOf(noContentTextView),
+            arrayOf(popularTvShowsRecyclerView, progressBar)
+        )
     }
 
     /**
-     * Function to clear the array list holding the popular tv shows data
-     * and initializing an HttpRequestObject
+     * Function clears the array list holding the popular tv shows data
+     * and initializes an HttpRequestObject. Function launches the function on the IO
+     * thread to fetch the popular tv shows list using the API
      */
     private fun clearAndReloadTvShows() {
         popularTvShowsList.clear()
@@ -198,7 +203,7 @@ class PopularTvShowsActivity : AppCompatActivity(), CoroutineScope, OnTvShowClic
     }
 
     /**
-     * Callback function to parse the tv shows using the [data] received from the API response
+     * Function to parse the tv shows using the [data] received from the API response
      */
     private fun getPopularTvShowsList(data: String?) {
         try {
@@ -227,7 +232,7 @@ class PopularTvShowsActivity : AppCompatActivity(), CoroutineScope, OnTvShowClic
                                 currentTvShow[AppConstants.JSON_TAG_POPULARITY].toString()
                             ),
                             currentTvShow[AppConstants.JSON_TAG_VOTE_AVERAGE].toString(),
-                            formatDate(currentTvShow[AppConstants.JSON_TAG_FIRST_AIR_DATE] as String)
+                            AppUtils.formatDate(currentTvShow[AppConstants.JSON_TAG_FIRST_AIR_DATE] as String)
 
                         )
                     )
@@ -239,15 +244,6 @@ class PopularTvShowsActivity : AppCompatActivity(), CoroutineScope, OnTvShowClic
         } catch (e: Exception) {
             e.printStackTrace()
         }
-    }
-
-    /**
-     * Function converts the date string received from the API response to MMM dd\nyyyy format
-     * to be used in the app. Function takes in [date] in yyyy-MM-dd format
-     */
-    private fun formatDate(date: String): String {
-        val parsedDate = SimpleDateFormat("yyyy-MM-dd", Locale.US).parse(date)
-        return SimpleDateFormat("MMM dd\nyyyy", Locale.US).format(parsedDate!!)
     }
 
     /**
