@@ -30,6 +30,11 @@
             android:configChanges="orientation"
             android:label="@string/details_screen_title"
             android:screenOrientation="portrait" />
+        <activity
+            android:name=".ImageViewActivity"
+            android:configChanges="orientation"
+            android:label="@string/image"
+            android:screenOrientation="portrait" />
 
 
     </application>

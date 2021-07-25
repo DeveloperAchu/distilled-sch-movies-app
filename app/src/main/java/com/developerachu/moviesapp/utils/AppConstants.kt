@@ -4,7 +4,8 @@ package com.developerachu.moviesapp.utils
  * This object holds the common string constants and URLs that are being used in other files
  */
 object AppConstants {
-
+    const val NAME = "name"
+    const val IMAGE = "imageUrl"
 
     // Constants
     const val POPULAR_SHOW_ID = "id"

@@ -1,6 +1,7 @@
 package com.developerachu.moviesapp
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -57,6 +58,10 @@ class TvShowDetailsActivity : AppCompatActivity(), CoroutineScope {
     private lateinit var voteAverageTextView: TextView
     private lateinit var voteCountTextView: TextView
 
+    // Create variables to hold the tv show name and image to be passed on to the next screen
+    private lateinit var name: String
+    private lateinit var imageUrl: String
+
 
     // Create a variable to hold the id of the tv show
     private var id: Int? = 0
@@ -83,6 +88,7 @@ class TvShowDetailsActivity : AppCompatActivity(), CoroutineScope {
         // The job variable is initialized here
         job = Job()
         initUiElements()
+        initClickEvents()
         loadTvShowDetails()
     }
 
@@ -109,6 +115,19 @@ class TvShowDetailsActivity : AppCompatActivity(), CoroutineScope {
         typeTextView = findViewById(R.id.type_text_view)
         voteAverageTextView = findViewById(R.id.vote_average_text_view)
         voteCountTextView = findViewById(R.id.vote_count_text_view)
+    }
+
+    /**
+     * Function to handle the click event on the poster image. This will open the new
+     * activity with the name of the tv show and the image url passed as intent extras
+     */
+    private fun initClickEvents() {
+        posterImageView.setOnClickListener {
+            val intent = Intent(this, ImageViewActivity::class.java)
+            intent.putExtra(AppConstants.NAME, name)
+            intent.putExtra(AppConstants.IMAGE, imageUrl)
+            startActivity(intent)
+        }
     }
 
     /**
@@ -209,8 +228,8 @@ class TvShowDetailsActivity : AppCompatActivity(), CoroutineScope {
         try {
             val jsonObject = JSONObject(data!!)
 
-            val name = jsonObject[AppConstants.JSON_TAG_NAME] as String
-            val imageUrl = String.format(
+            name = jsonObject[AppConstants.JSON_TAG_NAME] as String
+            imageUrl = String.format(
                 AppConstants.IMAGE_URL_PREFIX,
                 jsonObject[AppConstants.JSON_TAG_POSTER_PATH] as String
             )

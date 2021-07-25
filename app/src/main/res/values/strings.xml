@@ -25,4 +25,5 @@
     <string name="vote_average_text">Vote Average</string>
     <string name="vote_count_text">Vote Count</string>
     <string name="details_screen_title">Details</string>
+    <string name="image">Image</string>
 </resources>
