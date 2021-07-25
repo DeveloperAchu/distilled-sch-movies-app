@@ -7,4 +7,13 @@
     <string name="poster_image">Poster image</string>
     <string name="popularity">Popularity: %s</string>
     <string name="overview">Overview</string>
+    <string name="sort_menu">Sort</string>
+    <string name="alpha_sort_a_z">Alphabetically (a-z)</string>
+    <string name="alpha_sort_z_a">Alphabetically (z-a)</string>
+    <string name="popularity_low_high">Popularity (low-high)</string>
+    <string name="popularity_high_low">Popularity (high-low)</string>
+    <string name="vote_low_high">Vote (low-high)</string>
+    <string name="vote_high_low">Vote (high-low)</string>
+    <string name="air_date_low_high">First air date (latest last)</string>
+    <string name="air_date_high_low">First air date (latest first)</string>
 </resources>

@@ -15,7 +15,7 @@ import com.developerachu.moviesapp.models.TvShow
 
 class PopularTvShowsListAdapter(
     private val context: Context,
-    private val popularTvShowsList: ArrayList<TvShow>,
+    private val popularTvShowsList: MutableList<TvShow>,
     private var clickListener: OnTvShowClickListener? = null
 ) : RecyclerView.Adapter<PopularTvShowsListAdapter.TvShowHolder>() {
 

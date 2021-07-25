@@ -2,6 +2,9 @@ package com.developerachu.moviesapp
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -19,9 +22,6 @@ import com.developerachu.moviesapp.webservices.GetApiResponse
 import com.developerachu.moviesapp.webservices.HttpRequestObject
 import kotlinx.coroutines.*
 import org.json.JSONObject
-import java.text.SimpleDateFormat
-import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.coroutines.CoroutineContext
 
 /**
@@ -40,10 +40,13 @@ class PopularTvShowsActivity : AppCompatActivity(), CoroutineScope, OnTvShowClic
     private val context = this
 
     // Create an array list to hold the popular tv shows
-    private val popularTvShowsList = ArrayList<TvShow>()
+    private var popularTvShowsList = mutableListOf<TvShow>()
 
     // Create a variable to hold the recyclerview widget
     private lateinit var popularTvShowsRecyclerView: RecyclerView
+
+    // Create a variable to hold the custom recyclerview adapter
+    private var popularTvShowsListAdapter: PopularTvShowsListAdapter? = null
 
     // Create a variable to hold the progressbar widget
     private lateinit var progressBar: ProgressBar
@@ -259,9 +262,9 @@ class PopularTvShowsActivity : AppCompatActivity(), CoroutineScope, OnTvShowClic
      * Finally, set the adapter of the recyclerview to the newly created custom adapter instance
      */
     private fun setMyStoriesListAdapter() {
-        val popularTvShowsListAdapter = PopularTvShowsListAdapter(context, popularTvShowsList)
+        popularTvShowsListAdapter = PopularTvShowsListAdapter(context, popularTvShowsList)
         popularTvShowsRecyclerView.layoutManager = LinearLayoutManager(context)
-        popularTvShowsListAdapter.setTvShowClickListener(this)
+        popularTvShowsListAdapter!!.setTvShowClickListener(this)
         popularTvShowsRecyclerView.adapter = popularTvShowsListAdapter
     }
 
@@ -277,5 +280,74 @@ class PopularTvShowsActivity : AppCompatActivity(), CoroutineScope, OnTvShowClic
         val intent = Intent(this, TvShowDetailsActivity::class.java)
         intent.putExtra(AppConstants.POPULAR_SHOW_ID, id)
         startActivity(intent)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        val inflater: MenuInflater = menuInflater
+        inflater.inflate(R.menu.sort_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        // Handle item selection
+        return when (item.itemId) {
+            R.id.alpha_sort_a_z -> {
+                sortAlphabetically(true)
+                true
+            }
+            R.id.alpha_sort_z_a -> {
+                sortAlphabetically(false)
+                true
+            }
+            R.id.popularity_low_high -> {
+                sortPopularity(true)
+                true
+            }
+            R.id.popularity_high_low -> {
+                sortPopularity(false)
+                true
+            }
+            R.id.vote_low_high -> {
+                sortVote(true)
+                true
+            }
+            R.id.vote_high_low -> {
+                sortVote(false)
+                true
+            }
+            R.id.air_date_low_high -> {
+                sortAirDate(true)
+                true
+            }
+            R.id.air_date_high_low -> {
+                sortAirDate(false)
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun sortAlphabetically(sortAsc: Boolean) {
+        val sortedTvShowsList = if (sortAsc) {
+            popularTvShowsList.sortedWith(compareBy { it.name })
+        } else {
+            popularTvShowsList.sortedByDescending { it.name }
+        } as MutableList<TvShow>
+
+        popularTvShowsList.clear()
+        popularTvShowsList.addAll(sortedTvShowsList)
+        popularTvShowsListAdapter!!.notifyDataSetChanged()
+    }
+
+    private fun sortPopularity(sortAsc: Boolean) {
+        println("Sort asc: $sortAsc")
+    }
+
+    private fun sortVote(sortAsc: Boolean) {
+        println("Sort asc: $sortAsc")
+    }
+
+    private fun sortAirDate(sortAsc: Boolean) {
+        println("Sort asc: $sortAsc")
     }
 }

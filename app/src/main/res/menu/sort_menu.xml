@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/sort"
+        android:icon="@android:drawable/ic_menu_sort_by_size"
+        android:title="@string/sort_menu"
+        app:showAsAction="always">
+        <menu>
+            <item
+                android:id="@+id/alpha_sort_a_z"
+                android:title="@string/alpha_sort_a_z" />
+            <item
+                android:id="@+id/alpha_sort_z_a"
+                android:title="@string/alpha_sort_z_a" />
+            <item
+                android:id="@+id/popularity_low_high"
+                android:title="@string/popularity_low_high" />
+            <item
+                android:id="@+id/popularity_high_low"
+                android:title="@string/popularity_high_low" />
+            <item
+                android:id="@+id/vote_low_high"
+                android:title="@string/vote_low_high" />
+            <item
+                android:id="@+id/vote_high_low"
+                android:title="@string/vote_high_low" />
+            <item
+                android:id="@+id/air_date_low_high"
+                android:title="@string/air_date_low_high" />
+            <item
+                android:id="@+id/air_date_high_low"
+                android:title="@string/air_date_high_low" />
+        </menu>
+    </item>
+</menu>
