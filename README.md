@@ -23,7 +23,7 @@ Users can click on an item and open the details screen which shows the details o
 ## Screen 3
 
 This screen fetch the details of the clicked tv show. The api to get the tv show details is documented
-[here] (https://developers.themoviedb.org/3/tv/get-tv-details). The user can click on the image to enlarge the image
+[here](https://developers.themoviedb.org/3/tv/get-tv-details). The user can click on the image to enlarge the image
 
 ## Screen 4
 
