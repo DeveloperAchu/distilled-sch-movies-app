@@ -84,9 +84,9 @@ class PopularTvShowsListAdapter(
         fun bind(context: Context, tvShow: TvShow) {
             Glide.with(context).load(tvShow.imageUrl).into(tvShowImageView)
             tvShowNameTextView.text = tvShow.name
-            tvShowPopularityTextView.text = tvShow.popularity
-            tvShowVoteAverageTextView.text = tvShow.averageVote
-            tvShowDateTextView.text = tvShow.airDate
+            tvShowPopularityTextView.text = tvShow.popularityString
+            tvShowVoteAverageTextView.text = tvShow.averageVote.toString()
+            tvShowDateTextView.text = tvShow.firstAirDateString
         }
 
         /**

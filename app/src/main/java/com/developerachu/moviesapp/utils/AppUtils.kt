@@ -62,4 +62,13 @@ object AppUtils {
         val parsedDate = SimpleDateFormat("yyyy-MM-dd", Locale.US).parse(date)
         return SimpleDateFormat("MMM dd\nyyyy", Locale.US).format(parsedDate!!)
     }
+
+    /**
+     * Function converts the date string received from the API response to a long value
+     * to be used in the app. Function takes in [date] in yyyy-MM-dd format
+     */
+    fun formatDateToLong(date: String): Long {
+        val parsedDate = SimpleDateFormat("yyyy-MM-dd", Locale.US).parse(date)
+        return parsedDate.time
+    }
 }

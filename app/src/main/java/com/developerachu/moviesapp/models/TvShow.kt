@@ -5,15 +5,19 @@ package com.developerachu.moviesapp.models
  * [id]
  * [name],
  * [imageUrl],
- * [popularity],
+ * [popularityString],
+ * [popularityValue]
  * [averageVote],
- * [airDate]
+ * [firstAirDateString],
+ * [firstAirDateLongValue]
  */
 data class TvShow(
     val id: Int,
     val name: String,
     val imageUrl: String,
-    val popularity: String,
-    val averageVote: String,
-    val airDate: String
+    val popularityString: String,
+    val popularityValue: Double,
+    val averageVote: Number,
+    val firstAirDateString: String,
+    val firstAirDateLongValue: Long
 )

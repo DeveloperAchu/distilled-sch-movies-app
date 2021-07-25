@@ -234,9 +234,10 @@ class PopularTvShowsActivity : AppCompatActivity(), CoroutineScope, OnTvShowClic
                                 AppConstants.POPULARITY,
                                 currentTvShow[AppConstants.JSON_TAG_POPULARITY].toString()
                             ),
-                            currentTvShow[AppConstants.JSON_TAG_VOTE_AVERAGE].toString(),
-                            AppUtils.formatDate(currentTvShow[AppConstants.JSON_TAG_FIRST_AIR_DATE] as String)
-
+                            currentTvShow[AppConstants.JSON_TAG_POPULARITY] as Double,
+                            currentTvShow[AppConstants.JSON_TAG_VOTE_AVERAGE] as Number,
+                            AppUtils.formatDate(currentTvShow[AppConstants.JSON_TAG_FIRST_AIR_DATE] as String),
+                            AppUtils.formatDateToLong(currentTvShow[AppConstants.JSON_TAG_FIRST_AIR_DATE] as String)
                         )
                     )
                 }
@@ -334,20 +335,43 @@ class PopularTvShowsActivity : AppCompatActivity(), CoroutineScope, OnTvShowClic
             popularTvShowsList.sortedByDescending { it.name }
         } as MutableList<TvShow>
 
+        updateAdapterData(sortedTvShowsList)
+    }
+
+    private fun sortPopularity(sortAsc: Boolean) {
+        val sortedTvShowsList = if (sortAsc) {
+            popularTvShowsList.sortedWith(compareBy { it.popularityValue })
+        } else {
+            popularTvShowsList.sortedByDescending { it.popularityValue }
+        } as MutableList<TvShow>
+
+        updateAdapterData(sortedTvShowsList)
+    }
+
+    private fun sortVote(sortAsc: Boolean) {
+        val sortedTvShowsList = if (sortAsc) {
+            popularTvShowsList.sortedWith(compareBy { it.averageVote.toDouble() })
+        } else {
+            popularTvShowsList.sortedByDescending { it.averageVote.toDouble() }
+        } as MutableList<TvShow>
+
+        updateAdapterData(sortedTvShowsList)
+    }
+
+    private fun sortAirDate(sortAsc: Boolean) {
+        val sortedTvShowsList = if (sortAsc) {
+            popularTvShowsList.sortedWith(compareBy { it.firstAirDateLongValue })
+        } else {
+            popularTvShowsList.sortedByDescending { it.firstAirDateLongValue }
+        } as MutableList<TvShow>
+
+        updateAdapterData(sortedTvShowsList)
+    }
+
+    private fun updateAdapterData(sortedTvShowsList: MutableList<TvShow>) {
         popularTvShowsList.clear()
         popularTvShowsList.addAll(sortedTvShowsList)
         popularTvShowsListAdapter!!.notifyDataSetChanged()
     }
 
-    private fun sortPopularity(sortAsc: Boolean) {
-        println("Sort asc: $sortAsc")
-    }
-
-    private fun sortVote(sortAsc: Boolean) {
-        println("Sort asc: $sortAsc")
-    }
-
-    private fun sortAirDate(sortAsc: Boolean) {
-        println("Sort asc: $sortAsc")
-    }
 }
