@@ -16,4 +16,14 @@
     <string name="vote_high_low">Average Vote (high-low)</string>
     <string name="air_date_low_high">First air date (latest last)</string>
     <string name="air_date_high_low">First air date (latest first)</string>
+    <string name="popularity_text">Popularity</string>
+    <string name="first_air_date_text">First Air Date</string>
+    <string name="seasons_text">Seasons</string>
+    <string name="episodes_text">Episodes</string>
+    <string name="status_text">Status</string>
+    <string name="type_text">Type</string>
+    <string name="vote_average_text">Vote Average</string>
+    <string name="vote_count_text">Vote Count</string>
+    <string name="details_screen_title">Details</string>
+    <string name="image">Image</string>
 </resources>
