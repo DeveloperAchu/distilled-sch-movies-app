@@ -1,1 +1,1 @@
-# distilled-sch-movies-app
+# Movies App - Distilled SCH
