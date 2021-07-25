@@ -296,16 +296,16 @@ class TvShowDetailsActivity : AppCompatActivity(), CoroutineScope {
         voteCount: String
     ) {
         Glide.with(context).load(imageUrl).into(posterImageView)
-        nameTextView.text = name
-        overviewTextView.text = overview
-        popularityTextView.text = popularity
-        firstAirDateTextView.text = firstAirDate.replace("\n", ", ")
-        seasonsTextView.text = numberOfSeasons
-        episodesTextView.text = numberOfEpisodes
-        statusTextView.text = status
-        typeTextView.text = type
-        voteAverageTextView.text = voteAverage
-        voteCountTextView.text = voteCount
+        nameTextView.text = processValue(name)
+        overviewTextView.text = processValue(overview)
+        popularityTextView.text = processValue(popularity)
+        firstAirDateTextView.text = processValue(firstAirDate.replace("\n", ", "))
+        seasonsTextView.text = processValue(numberOfSeasons)
+        episodesTextView.text = processValue(numberOfEpisodes)
+        statusTextView.text = processValue(status)
+        typeTextView.text = processValue(type)
+        voteAverageTextView.text = processValue(voteAverage)
+        voteCountTextView.text = processValue(voteCount)
 
         // For each genre item we have, we inflate a new view with a textview and add that to
         // the layout
@@ -315,5 +315,16 @@ class TvShowDetailsActivity : AppCompatActivity(), CoroutineScope {
             textView.text = genre
             genreLayout.addView(view)
         }
+    }
+
+    /**
+     * Function that process the value. If the value is empty string, it is replaced as a hyphen
+     * in the UI
+     */
+    private fun processValue(value: String): String {
+        if (value.isEmpty()) {
+            return "-"
+        }
+        return value
     }
 }
